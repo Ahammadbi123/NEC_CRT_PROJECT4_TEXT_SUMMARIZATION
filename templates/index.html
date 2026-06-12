@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Summarizer</title>
+    <!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Summarizer</title>
+
+```
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+    body{
+        background: linear-gradient(
+            135deg,
+            #020617,
+            #0f172a,
+            #1e1b4b,
+            #020617
+        );
+        background-attachment: fixed;
+    }
+
+    .glass-box{
+        background: rgba(255,255,255,0.08);
+        backdrop-filter: blur(15px);
+        border:1px solid rgba(255,255,255,0.15);
+    }
+
+    .glow{
+        box-shadow:
+        0 0 20px rgba(59,130,246,.25),
+        0 0 60px rgba(59,130,246,.10);
+    }
+</style>
+```
+
+</head>
+
+<body class="min-h-screen p-5">
+
+<div class="max-w-4xl mx-auto">
+
+```
+<!-- Header -->
+<header class="text-center mb-10">
+
+    <h1 class="text-5xl font-extrabold text-cyan-400">
+        🤖 AI Text Summarizer
+    </h1>
+
+    <p class="text-slate-300 mt-3 text-lg">
+        Get accurate summaries without losing meaning
+    </p>
+
+</header>
+
+<!-- Input Section -->
+<div class="glass-box glow p-6 rounded-3xl shadow-2xl mb-8">
+
+    <textarea
+        id="inputText"
+        rows="10"
+        class="w-full p-4 bg-slate-900 text-white border border-cyan-500/30 rounded-xl focus:ring-2 focus:ring-cyan-400 outline-none transition"
+        placeholder="Paste your paragraph, article or document here..."></textarea>
+
+    <button
+        onclick="summarizeText()"
+        id="btn"
+        class="mt-4 w-full bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-700 text-white py-4 rounded-xl font-bold text-lg hover:scale-105 transition-all shadow-xl">
+
+        ⚡ Summarize (Fast Mode)
+
+    </button>
+
+</div>
+
+<!-- Result Box -->
+<div id="resultBox"
+     class="hidden glass-box glow p-8 rounded-3xl shadow-2xl mb-10">
+
+    <div class="flex justify-between items-center mb-4">
+
+        <h2 class="text-2xl font-bold text-cyan-300">
+            📄 Summary Result
+        </h2>
+
+        <div class="flex gap-2">
+
+            <button
+                onclick="downloadSummary()"
+                class="text-sm bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-black transition">
+
+                📥 TXT
+
+            </button>
+
+            <button
+                onclick="downloadPDF()"
+                class="text-sm bg-gradient-to-r from-red-500 to-pink-600 text-white px-4 py-2 rounded-lg hover:scale-105 transition">
+
+                📄 PDF
+
+            </button>
+
+        </div>
+
+    </div>
+
+    <div id="summaryText"
+         class="text-slate-200 leading-relaxed text-lg whitespace-pre-line">
+    </div>
+
+</div>
+```
+
+</div>
+
+<script>
+
+async function summarizeText() {
+
+    const text = document.getElementById('inputText').value;
+    const btn = document.getElementById('btn');
+    const resultBox = document.getElementById('resultBox');
+
+    if (!text) {
+        alert("Please paste some text first!");
+        return;
+    }
+
+    btn.innerText = "🤖 Processing with Llama-3...";
+    btn.disabled = true;
+
+    try {
+
+        const response = await fetch('/summarize', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: text
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.summary) {
+
+            resultBox.classList.remove('hidden');
+
+            document.getElementById('summaryText').innerText =
+                data.summary;
+
+            resultBox.scrollIntoView({
+                behavior: 'smooth'
+            });
+
+        } else {
+
+            alert("Error: " + data.error);
+
+        }
+
+    } catch (err) {
+
+        alert("Server connection failed.");
+
+    } finally {
+
+        btn.innerText = "⚡ Summarize (Fast Mode)";
+        btn.disabled = false;
+
+    }
+}
+
+function downloadSummary() {
+
+    const text =
+        document.getElementById('summaryText').innerText;
+
+    const blob = new Blob(
+        [text],
+        { type: 'text/plain' }
+    );
+
+    const anchor =
+        document.createElement('a');
+
+    anchor.download =
+        'Summary_Report.txt';
+
+    anchor.href =
+        window.URL.createObjectURL(blob);
+
+    anchor.click();
+}
+
+function downloadPDF() {
+
+    const summary =
+        document.getElementById('summaryText').innerText;
+
+    fetch('/download_pdf', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            summary: summary
+        })
+    })
+    .then(response => response.blob())
+    .then(blob => {
+
+        const url =
+            window.URL.createObjectURL(blob);
+
+        const a =
+            document.createElement('a');
+
+        a.href = url;
+        a.download = 'Summary_Report.pdf';
+        a.click();
+
+        window.URL.revokeObjectURL(url);
+
+    })
+    .catch(error => {
+
+        alert("PDF Download Error!");
+
+        console.error(error);
+
+    });
+}
+
+</script>
+
+</body>
+</html>
+</body>
+</html>
