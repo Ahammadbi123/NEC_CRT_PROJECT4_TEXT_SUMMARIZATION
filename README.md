@@ -105,7 +105,7 @@ The objective of this project is to reduce the time required to read lengthy doc
 
 ## 👨‍💻 Developed By
 
-**Ahammad Basha**
+**SHAIK AHAMMAD BI**
 
 NEC CRT Project 4
 
